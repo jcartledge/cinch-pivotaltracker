@@ -4,18 +4,21 @@ require 'pivotal-tracker'
 class PivotalTrackerPlugin
   include Cinch::Plugin
 
-  prefix "!pt "
-  match /token (.+)/,     method: :token=
-  match "projects",       method: :projects
-  match "project",        method: :project
-  match /project (\d+)/,  method: :project=
+  prefix "!pt"
 
-  match "current",        method: :current
-  match "bugs",           method: :bugs
-  match "features",       method: :features
-  match "chores",         method: :chores
+  match " help",                  method: :help
 
-  match /story (\d+)/,    method: :story
+  match /\stoken\s*=?\s*(.+)/,    method: :token=
+  match " projects",              method: :projects
+  match " project",               method: :project
+  match /\sproject\s*=?\s*(\d+)/, method: :project=
+
+  match " current",               method: :current
+  match " bugs",                  method: :bugs
+  match " features",              method: :features
+  match " chores",                method: :chores
+
+  match /\sstory (\d+)/,          method: :story
 
   # token and project_id can be supplied as environment variables
   def initialize bot
@@ -27,15 +30,37 @@ class PivotalTrackerPlugin
     end
   end
 
+  # display a helpful messsage about usage
+  def help(m)
+    m.reply "!pt help                 # display this message"
+
+    m.reply "!pt token=[TOKEN_ID]     # set the Pivotal Tracker auth token"
+    m.reply "!pt projects             # list projects"
+    m.reply "!pt project              # display the current project"
+    m.reply "!pt project=[PROJECT_ID] # change the current project"
+
+    m.reply "!pt current              # list all stories in the current iteration"
+    m.reply "!pt bugs                 # list bugs in the current iteration"
+    m.reply "!pt features             # list features in the current iteration"
+    m.reply "!pt chores               # list chores in the current iteration"
+
+    m.reply "!pt story [STORY_ID]     # display story details"
+  end
+
   # set the auth token
   def token=(m, token)
     self.set_token(token)
+    m.reply "Token is now #{token}"
   end
 
   # list all projects
   def projects(m)
+    begin
     PivotalTracker::Project.all.each do |project|
       m.reply "#{project.name}: #{project.id}"
+    end
+    rescue
+      m.reply "Something went wrong :("
     end
   end
 
@@ -45,7 +70,6 @@ class PivotalTrackerPlugin
   end
 
   # set the current project by id
-  # @TODO allow set by name
   def project=(m, project_id)
     begin
       project = PivotalTracker::Project.find(project_id)
