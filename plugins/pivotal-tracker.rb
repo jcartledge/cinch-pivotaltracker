@@ -4,11 +4,11 @@ require 'pivotal-tracker'
 class PivotalTrackerPlugin
   include Cinch::Plugin
 
-  prefix "pt "
-  match /token (.+)/,     method: :token
+  prefix "!pt "
+  match /token (.+)/,     method: :token=
   match "projects",       method: :projects
   match "project",        method: :project
-  match /project (\d+)/,  method: :set_project
+  match /project (\d+)/,  method: :project=
 
   match "current",        method: :current
   match "bugs",           method: :bugs
@@ -28,14 +28,14 @@ class PivotalTrackerPlugin
   end
 
   # set the auth token
-  def token(m, token)
+  def token=(m, token)
     self.set_token(token)
   end
 
   # list all projects
   def projects(m)
     PivotalTracker::Project.all.each do |project|
-      m.reply "#{project.name}: #{project.id}\r"
+      m.reply "#{project.name}: #{project.id}"
     end
   end
 
@@ -46,7 +46,7 @@ class PivotalTrackerPlugin
 
   # set the current project by id
   # @TODO allow set by name
-  def set_project(m, project_id)
+  def project=(m, project_id)
     begin
       project = PivotalTracker::Project.find(project_id)
       m.reply "Current project is now #{@project.name}: #{@project.id}"
@@ -86,8 +86,17 @@ class PivotalTrackerPlugin
   end
 
   # show details of story by id
-  # @TODO implement
   def story(m, story_id)
+    begin
+      story = @project.stories.find(story_id)
+      show_story(m, story)
+      m.reply("Requested by #{story.requested_by}") if story.requested_by
+      m.reply("Owned by #{story.owned_by}") if story.owned_by
+      m.reply(story.description)
+      m.reply(story.url)
+    rescue
+      m.reply "Couldn't find that story :("
+    end
   end
 
   protected
