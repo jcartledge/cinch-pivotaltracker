@@ -6,10 +6,16 @@ class PivotalTrackerPlugin
 
   prefix "pt "
   match /token (.+)/,     method: :token
-  match /projects/,       method: :projects
-  match /project$/,       method: :project
+  match "projects",       method: :projects
+  match "project",        method: :project
   match /project (\d+)/,  method: :set_project
-  match /search (.+)/,    method: :search
+
+  match "current",        method: :current
+  match "bugs",           method: :bugs
+  match "features",       method: :features
+  match "chores",         method: :chores
+
+  match /story (\d+)/,    method: :story
 
   # token and project_id can be supplied as environment variables
   def initialize bot
@@ -51,17 +57,55 @@ class PivotalTrackerPlugin
     @project = project
   end
 
+  # list stories in the current iteration
+  def current(m)
+    current = @project.iteration(:current)
+    days_left = (current.finish - Date.today).to_i - 1
+    if days_left > 1
+      m.reply "#{days_left} days left"
+    elsif days_left == 1
+      m.reply "1 day left"
+    else
+      m.reply "Finishes today"
+    end
+    current.stories.map do |story|
+      show_story(m, story)
+    end
+  end
 
-  # search stories in the current project
+  def features(m)
+    show_stories_by_type(m, @project.iteration(:current).stories, "feature")
+  end
+
+  def bugs(m)
+    show_stories_by_type(m, @project.iteration(:current).stories, "bug")
+  end
+
+  def chores(m)
+    show_stories_by_type(m, @project.iteration(:current).stories, "chore")
+  end
+
+  # show details of story by id
   # @TODO implement
-  def search(m, query)
-    m.reply "Sorry, nothing found for #{foo}"
+  def story(m, story_id)
   end
 
   protected
 
   def set_token(token)
     PivotalTracker::Client.token = token
+  end
+
+  def show_story(m, story)
+    estimate = ""
+    estimate = ("*" * story.estimate) + " " if story.estimate
+    m.reply "#{story.id} [#{story.story_type[0]}][#{story.current_state}] #{estimate}#{story.name}"
+  end
+
+  def show_stories_by_type(m, stories, type)
+    stories.select{ |s|
+      s.story_type == type
+    }.map{ |story| show_story(m, story) }
   end
 
 end
