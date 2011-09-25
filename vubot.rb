@@ -1,5 +1,5 @@
 require 'cinch'
-require './plugins/pivotal-tracker'
+require './plugins/cinch-pivotaltracker/lib/cinch-pivotal-tracker'
 
 vubot = Cinch::Bot.new do
   configure do |c|

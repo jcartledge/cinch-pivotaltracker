@@ -20,11 +20,12 @@ class PivotalTrackerPlugin
   match /\sstory (\d+)/,          method: :story
 
   # token and project_id can be supplied as environment variables
-  def initialize bot
+  def initialize bot, tracker=PivotalTracker
+    @tracker = tracker
     token = ENV['token']
     if token
       self.set_token(token)
-      @project = PivotalTracker::Project.find(ENV['project_id']) if ENV['project_id']
+      @project = @tracker::Project.find(ENV['project_id']) if ENV['project_id']
       super(bot)
     end
   end
@@ -48,7 +49,7 @@ class PivotalTrackerPlugin
   # list all projects
   def projects(user)
     begin
-    PivotalTracker::Project.all.each do |project|
+    @tracker::Project.all.each do |project|
       user.reply "#{project.name}: #{project.id}"
     end
     rescue
@@ -64,7 +65,7 @@ class PivotalTrackerPlugin
   # set the current project by id
   def project=(user, project_id)
     begin
-      project = PivotalTracker::Project.find(project_id)
+      project = @tracker::Project.find(project_id)
       user.reply "Current project is now #{@project.name}: #{@project.id}"
     rescue
       project = @project
@@ -118,7 +119,7 @@ class PivotalTrackerPlugin
   protected
 
   def set_token(token)
-    PivotalTracker::Client.token = token
+    @tracker::Client.token = token
   end
 
   def show_story(user, story)
