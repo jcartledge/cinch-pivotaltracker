@@ -6,22 +6,21 @@ module Cinch
     class PivotalTracker
       include Cinch::Plugin
 
-      prefix "!pt"
+      prefix "!pt "
 
-      match " help",                  method: :help
+      match "help",                  method: :help
 
-      match " projects",              method: :projects
-      match " project",               method: :project
-      match /\sproject\s*=?\s*(\d+)/, method: :project=
+      match "projects",              method: :projects
+      match "project",               method: :project
+      match /project\s*=?\s*(\d+)/,  method: :project=
 
-        match " current",               method: :current
-      match " bugs",                  method: :bugs
-      match " features",              method: :features
-      match " chores",                method: :chores
+      match "current",               method: :current
+      match "bugs",                  method: :bugs
+      match "features",              method: :features
+      match "chores",                method: :chores
 
-      match /\sstory (\d+)/,          method: :story
+      match /story (\d+)/,           method: :story
 
-      # token and project_id can be supplied as environment variables
       def initialize bot, tracker=::PivotalTracker
         super(bot)
         @tracker = tracker
