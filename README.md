@@ -36,31 +36,31 @@ Then load it in your bot:
 
 All commands are prefixed by `!pt `.
 
-### help
+### !pt help
 display a helpful usage message
 
-### projects
+### !pt projects
 list all projects
 
-### project
+### !pt project
 display the current project
 
-### project=[PROJECT\_ID]
+### !pt project=[PROJECT\_ID]
 change the current project
 
-### current
+### !pt current
 list all stories in the current iteration
 
-### bugs
+### !pt bugs
 list bugs in the current iteration
 
-### features
+### !pt features
 list features in the current iteration
 
-### chores
+### !pt chores
 list chores in the current iteration
 
-### story [STORY\_ID]
+### !pt story [STORY\_ID]
 display story details
 
 ## Options
