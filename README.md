@@ -34,7 +34,34 @@ Then load it in your bot:
 
 ## Commands
 
-All commands are prefixed by `!pt`. Check the source, or run your bot and try `!pt help`.
+All commands are prefixed by `!pt `.
+
+### help
+display a helpful usage message
+
+### projects
+list all projects
+
+### project
+display the current project
+
+### project=[PROJECT\_ID]
+change the current project
+
+### current
+list all stories in the current iteration
+
+### bugs
+list bugs in the current iteration
+
+### features
+list features in the current iteration
+
+### chores
+list chores in the current iteration
+
+### story [STORY\_ID]
+display story details
 
 ## Options
 
