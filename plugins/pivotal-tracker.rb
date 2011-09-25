@@ -8,7 +8,6 @@ class PivotalTrackerPlugin
 
   match " help",                  method: :help
 
-  match /\stoken\s*=?\s*(.+)/,    method: :token=
   match " projects",              method: :projects
   match " project",               method: :project
   match /\sproject\s*=?\s*(\d+)/, method: :project=
@@ -34,7 +33,6 @@ class PivotalTrackerPlugin
   def help(user)
     user.reply "!pt help                 # display this message"
 
-    user.reply "!pt token=[TOKEN_ID]     # set the Pivotal Tracker auth token"
     user.reply "!pt projects             # list projects"
     user.reply "!pt project              # display the current project"
     user.reply "!pt project=[PROJECT_ID] # change the current project"
@@ -45,12 +43,6 @@ class PivotalTrackerPlugin
     user.reply "!pt chores               # list chores in the current iteration"
 
     user.reply "!pt story [STORY_ID]     # display story details"
-  end
-
-  # set the auth token
-  def token=(user, token)
-    self.set_token(token)
-    user.reply "Token is now #{token}"
   end
 
   # list all projects
