@@ -23,12 +23,11 @@ module Cinch
 
       # token and project_id can be supplied as environment variables
       def initialize bot, tracker=PivotalTracker
+        super(bot)
         @tracker = tracker
-        token = ENV['pivotaltracker_token']
-        if token
-          self.set_token(token)
-          @project = @tracker::Project.find(ENV['project_id']) if ENV['project_id']
-          super(bot)
+        set_token(config[:token])
+        if config[:project_id]
+          @project = @tracker::Project.find(config[:project_id])
         end
       end
 
