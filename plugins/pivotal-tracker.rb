@@ -31,95 +31,95 @@ class PivotalTrackerPlugin
   end
 
   # display a helpful messsage about usage
-  def help(m)
-    m.reply "!pt help                 # display this message"
+  def help(user)
+    user.reply "!pt help                 # display this message"
 
-    m.reply "!pt token=[TOKEN_ID]     # set the Pivotal Tracker auth token"
-    m.reply "!pt projects             # list projects"
-    m.reply "!pt project              # display the current project"
-    m.reply "!pt project=[PROJECT_ID] # change the current project"
+    user.reply "!pt token=[TOKEN_ID]     # set the Pivotal Tracker auth token"
+    user.reply "!pt projects             # list projects"
+    user.reply "!pt project              # display the current project"
+    user.reply "!pt project=[PROJECT_ID] # change the current project"
 
-    m.reply "!pt current              # list all stories in the current iteration"
-    m.reply "!pt bugs                 # list bugs in the current iteration"
-    m.reply "!pt features             # list features in the current iteration"
-    m.reply "!pt chores               # list chores in the current iteration"
+    user.reply "!pt current              # list all stories in the current iteration"
+    user.reply "!pt bugs                 # list bugs in the current iteration"
+    user.reply "!pt features             # list features in the current iteration"
+    user.reply "!pt chores               # list chores in the current iteration"
 
-    m.reply "!pt story [STORY_ID]     # display story details"
+    user.reply "!pt story [STORY_ID]     # display story details"
   end
 
   # set the auth token
-  def token=(m, token)
+  def token=(user, token)
     self.set_token(token)
-    m.reply "Token is now #{token}"
+    user.reply "Token is now #{token}"
   end
 
   # list all projects
-  def projects(m)
+  def projects(user)
     begin
     PivotalTracker::Project.all.each do |project|
-      m.reply "#{project.name}: #{project.id}"
+      user.reply "#{project.name}: #{project.id}"
     end
     rescue
-      m.reply "Something went wrong :("
+      user.reply "Something went wrong :("
     end
   end
 
   # display the current project
-  def project(m)
-    m.reply "Current project is #{@project.name}: #{@project.id}"
+  def project(user)
+    user.reply "Current project is #{@project.name}: #{@project.id}"
   end
 
   # set the current project by id
-  def project=(m, project_id)
+  def project=(user, project_id)
     begin
       project = PivotalTracker::Project.find(project_id)
-      m.reply "Current project is now #{@project.name}: #{@project.id}"
+      user.reply "Current project is now #{@project.name}: #{@project.id}"
     rescue
       project = @project
-      m.reply "Could not find project #{project_id} - project is still #{@project.name}"
+      user.reply "Could not find project #{project_id} - project is still #{@project.name}"
     end
     @project = project
   end
 
   # list stories in the current iteration
-  def current(m)
+  def current(user)
     current = @project.iteration(:current)
     days_left = (current.finish - Date.today).to_i - 1
     if days_left > 1
-      m.reply "#{days_left} days left"
+      user.reply "#{days_left} days left"
     elsif days_left == 1
-      m.reply "1 day left"
+      user.reply "1 day left"
     else
-      m.reply "Finishes today"
+      user.reply "Finishes today"
     end
     current.stories.map do |story|
-      show_story(m, story)
+      show_story(user, story)
     end
   end
 
-  def features(m)
-    show_stories_by_type(m, @project.iteration(:current).stories, "feature")
+  def features(user)
+    show_stories_by_type(user, @project.iteration(:current).stories, "feature")
   end
 
-  def bugs(m)
-    show_stories_by_type(m, @project.iteration(:current).stories, "bug")
+  def bugs(user)
+    show_stories_by_type(user, @project.iteration(:current).stories, "bug")
   end
 
-  def chores(m)
-    show_stories_by_type(m, @project.iteration(:current).stories, "chore")
+  def chores(user)
+    show_stories_by_type(user, @project.iteration(:current).stories, "chore")
   end
 
   # show details of story by id
-  def story(m, story_id)
+  def story(user, story_id)
     begin
       story = @project.stories.find(story_id)
-      show_story(m, story)
-      m.reply("Requested by #{story.requested_by}") if story.requested_by
-      m.reply("Owned by #{story.owned_by}") if story.owned_by
-      m.reply(story.description)
-      m.reply(story.url)
+      show_story(user, story)
+      user.reply("Requested by #{story.requested_by}") if story.requested_by
+      user.reply("Owned by #{story.owned_by}") if story.owned_by
+      user.reply(story.description)
+      user.reply(story.url)
     rescue
-      m.reply "Couldn't find that story :("
+      user.reply "Couldn't find that story :("
     end
   end
 
@@ -129,16 +129,16 @@ class PivotalTrackerPlugin
     PivotalTracker::Client.token = token
   end
 
-  def show_story(m, story)
+  def show_story(user, story)
     estimate = ""
     estimate = ("*" * story.estimate) + " " if story.estimate
-    m.reply "#{story.id} [#{story.story_type[0]}][#{story.current_state}] #{estimate}#{story.name}"
+    user.reply "#{story.id} [#{story.story_type[0]}][#{story.current_state}] #{estimate}#{story.name}"
   end
 
-  def show_stories_by_type(m, stories, type)
+  def show_stories_by_type(user, stories, type)
     stories.select{ |s|
       s.story_type == type
-    }.map{ |story| show_story(m, story) }
+    }.map{ |story| show_story(user, story) }
   end
 
 end
