@@ -20,7 +20,7 @@ Then use bundler to install it:
 Then load it in your bot:
 
     require "cinch"
-    require "cinch/plugins/cinch-pivotaltracker"
+    require "cinch/plugins/pivotaltracker"
 
     bot = Cinch::Bot.new do
       configure do |c|
