@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.description = 'A Pivotal Tracker plugin for the Cinch framework'
   s.authors = ['James Cartledge']
   s.email = ['jcartledge@gmail.com']
-  s.homepage = ''
+  s.homepage = 'https://github.com/jcartledge/cinch-pivotaltracker'
   s.required_ruby_version = '>= 1.9.1'
   s.files = Dir['LICENSE', 'README.md', '{lib,examples}/**/*']
   s.add_dependency("cinch", "~> 1.0")
