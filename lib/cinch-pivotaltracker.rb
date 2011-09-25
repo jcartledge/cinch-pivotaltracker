@@ -1,7 +1,7 @@
 require 'cinch'
 require 'pivotal-tracker'
 
-class PivotalTrackerPlugin
+class CinchPivotalTracker
   include Cinch::Plugin
 
   prefix "!pt"
