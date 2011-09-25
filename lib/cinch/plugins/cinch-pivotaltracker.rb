@@ -3,7 +3,7 @@ require 'pivotal-tracker'
 
 module Cinch
   module Plugins
-    class CinchPivotalTracker
+    class PivotalTracker
       include Cinch::Plugin
 
       prefix "!pt"
@@ -22,7 +22,7 @@ module Cinch
       match /\sstory (\d+)/,          method: :story
 
       # token and project_id can be supplied as environment variables
-      def initialize bot, tracker=PivotalTracker
+      def initialize bot, tracker=::PivotalTracker
         super(bot)
         @tracker = tracker
         set_token(config[:token])
