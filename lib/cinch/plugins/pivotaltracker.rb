@@ -21,12 +21,12 @@ module Cinch
 
       match /story (\d+)/,           method: :story
 
-      def initialize bot, tracker=::PivotalTracker
+      def initialize bot
         super(bot)
-        @tracker = tracker
-        set_token(config[:token])
+        @tracker = ::PivotalTracker
+        set_token(config[:token]) if respond_to?(:config)
         if config[:project_id]
-          @project = @tracker::Project.find(config[:project_id])
+          @project = ::PivotalTracker::Project.find(config[:project_id])
         end
       end
 
@@ -49,7 +49,7 @@ module Cinch
       # list all projects
       def projects(user)
         begin
-          @tracker::Project.all.each do |project|
+          ::PivotalTracker::Project.all.each do |project|
             user.reply "#{project.name}: #{project.id}"
           end
         rescue
@@ -65,7 +65,7 @@ module Cinch
       # set the current project by id
       def project=(user, project_id)
         begin
-          project = @tracker::Project.find(project_id)
+          project = ::PivotalTracker::Project.find(project_id)
           user.reply "Current project is now #{@project.name}: #{@project.id}"
         rescue
           project = @project
@@ -119,7 +119,7 @@ module Cinch
       protected
 
       def set_token(token)
-        @tracker::Client.token = token
+        ::PivotalTracker::Client.token = token
       end
 
       def show_story(user, story)
