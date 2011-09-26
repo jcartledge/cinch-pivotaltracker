@@ -30,7 +30,6 @@ describe Cinch::Plugins::PivotalTracker, "projects" do
 
   before do
     setup
-    # stub PT response
     ::PivotalTracker::Project.should_receive(:all).and_return([
       Struct::Project.new("Test project 1", 1),
       Struct::Project.new("Test project 2", 2),
@@ -51,8 +50,7 @@ describe Cinch::Plugins::PivotalTracker, "project=" do
   before do
     setup
     ::PivotalTracker::Project.should_receive(:find).with(1).and_return(
-      Struct::Project.new("Test project 1", 1)
-    )
+      Struct::Project.new("Test project 1", 1))
   end
 
   it "should set the current project" do
