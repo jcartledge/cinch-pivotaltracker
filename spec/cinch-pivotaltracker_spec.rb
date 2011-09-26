@@ -1,9 +1,10 @@
 require 'spec_helper'
 
 module Cinch::Plugins::PivotalTracker::Spec
+  Struct.new("Project", :name, :id)
+
   def setup
     # useful structs
-    Struct.new("Project", :name, :id)
 
     # mock out bot and user
     options = mock('options')
@@ -31,7 +32,6 @@ describe Cinch::Plugins::PivotalTracker, "projects" do
 
   before do
     setup
-
     # stub PT response
     ::PivotalTracker::Project.should_receive(:all).and_return([
       Struct::Project.new("Test project 1", 1),
@@ -42,18 +42,34 @@ describe Cinch::Plugins::PivotalTracker, "projects" do
   it "should list all projects" do
     @user.should_receive(:reply).with('Test project 1: 1')
     @user.should_receive(:reply).with('Test project 2: 2')
-
     plugin = Cinch::Plugins::PivotalTracker.new(@bot)
     plugin.projects(@user)
   end
 end
 
 describe Cinch::Plugins::PivotalTracker, "project=" do
-  it "should set the current project" do
-    pending
+  include Cinch::Plugins::PivotalTracker::Spec
+
+  before do
+    setup
+    ::PivotalTracker::Project.should_receive(:find).with(1).and_return(
+      Struct::Project.new("Test project 1", 1)
+    )
   end
+
+  it "should set the current project" do
+    @user.should_receive(:reply).with('Current project is now Test project 1: 1')
+    plugin = Cinch::Plugins::PivotalTracker.new(@bot)
+    plugin.send(:project=, @user, 1)
+  end
+
   it "should fail when the project doesn't exist" do
-    pending
+    ::PivotalTracker::Project.should_receive(:find).with(2).and_return(nil)
+    @user.should_receive(:reply).with('Current project is now Test project 1: 1')
+    @user.should_receive(:reply).with('Could not find project 2 - project is still Test project 1')
+    plugin = Cinch::Plugins::PivotalTracker.new(@bot)
+    plugin.send(:project=, @user, 1)
+    plugin.send(:project=, @user, 2)
   end
 end
 

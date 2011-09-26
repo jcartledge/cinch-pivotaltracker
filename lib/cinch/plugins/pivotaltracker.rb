@@ -66,7 +66,8 @@ module Cinch
       def project=(user, project_id)
         begin
           project = ::PivotalTracker::Project.find(project_id)
-          user.reply "Current project is now #{@project.name}: #{@project.id}"
+          throw if nil == project
+          user.reply "Current project is now #{project.name}: #{project.id}"
         rescue
           project = @project
           user.reply "Could not find project #{project_id} - project is still #{@project.name}"
