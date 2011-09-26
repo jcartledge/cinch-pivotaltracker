@@ -21,10 +21,10 @@ module Cinch
 
       match /story (\d+)/,           method: :story
 
-      def initialize bot
-        super(bot)
+      def initialize bot=nil
+        super(bot) if bot
         @tracker = ::PivotalTracker
-        set_token(config[:token]) if respond_to?(:config)
+        set_token(config[:token])
         if config[:project_id]
           @project = ::PivotalTracker::Project.find(config[:project_id])
         end

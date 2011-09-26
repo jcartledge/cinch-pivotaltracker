@@ -4,8 +4,6 @@ module Cinch::Plugins::PivotalTracker::Spec
   Struct.new("Project", :name, :id)
 
   def setup
-    # useful structs
-
     # mock out bot and user
     options = mock('options')
     options.stub(:[])
