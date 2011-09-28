@@ -6,7 +6,7 @@ module Cinch::Plugins::PivotalTracker::Spec
   def setup
     # mock out bot and user
     options = mock('options')
-    options.stub(:[])
+    options.stub(:[]).and_return({:token => TOKEN, :project_id => TOKEN})
 
     plugins = mock('plugins')
     plugins.stub(:suffix)
@@ -27,18 +27,13 @@ end
 
 describe Cinch::Plugins::PivotalTracker, "projects" do
   include Cinch::Plugins::PivotalTracker::Spec
-
   before do
     setup
-    ::PivotalTracker::Project.should_receive(:all).and_return([
-      Struct::Project.new("Test project 1", 1),
-      Struct::Project.new("Test project 2", 2),
-    ])
   end
 
   it "should list all projects" do
-    @user.should_receive(:reply).with('Test project 1: 1')
-    @user.should_receive(:reply).with('Test project 2: 2')
+    @user.should_receive(:reply).with('Pivotal Tracker API Gem: 102622')
+    @user.should_receive(:reply).with('Pivotal Tracker API Gem Target Project: 103014')
     plugin = Cinch::Plugins::PivotalTracker.new(@bot)
     plugin.projects(@user)
   end
@@ -46,26 +41,18 @@ end
 
 describe Cinch::Plugins::PivotalTracker, "project=" do
   include Cinch::Plugins::PivotalTracker::Spec
-
   before do
     setup
-    ::PivotalTracker::Project.should_receive(:find).with(1).and_return(
-      Struct::Project.new("Test project 1", 1))
   end
 
   it "should set the current project" do
-    @user.should_receive(:reply).with('Current project is now Test project 1: 1')
+    @user.should_receive(:reply).with('Current project is now Pivotal Tracker API Gem Target Project: 103014')
     plugin = Cinch::Plugins::PivotalTracker.new(@bot)
-    plugin.send(:project=, @user, 1)
+    plugin.send(:project=, @user, 103014)
   end
 
   it "should fail when the project doesn't exist" do
-    ::PivotalTracker::Project.should_receive(:find).with(2).and_return(nil)
-    @user.should_receive(:reply).with('Current project is now Test project 1: 1')
-    @user.should_receive(:reply).with('Could not find project 2 - project is still Test project 1')
-    plugin = Cinch::Plugins::PivotalTracker.new(@bot)
-    plugin.send(:project=, @user, 1)
-    plugin.send(:project=, @user, 2)
+    pending
   end
 end
 
